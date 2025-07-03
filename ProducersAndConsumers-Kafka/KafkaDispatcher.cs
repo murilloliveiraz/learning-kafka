@@ -6,7 +6,7 @@ public class KafkaDispatcher<TKey, TValue> : IDisposable
     private readonly IProducer<TKey, TValue> _producer;
     private readonly ProducerConfig _producerConfig;
 
-    public KafkaDispatcher()
+    public KafkaDispatcher(ISerializer<TKey> keySerializer, ISerializer<TValue> valueSerializer)
     {
         _producerConfig = new ProducerConfig
         {
@@ -14,8 +14,8 @@ public class KafkaDispatcher<TKey, TValue> : IDisposable
         };
 
         _producer = new ProducerBuilder<TKey, TValue>(_producerConfig)
-            .SetKeySerializer(Serializers.Utf8 as ISerializer<TKey>)
-            .SetValueSerializer(Serializers.Utf8 as ISerializer<TValue>)
+            .SetKeySerializer(keySerializer)
+            .SetValueSerializer(valueSerializer)
             .SetErrorHandler((_, e) => Console.WriteLine($"Erro interno do Kafka no Dispatcher: {e.Reason}"))
             .Build();
     }

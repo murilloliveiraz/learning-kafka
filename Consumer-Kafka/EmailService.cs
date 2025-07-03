@@ -1,5 +1,7 @@
 ﻿using Confluent.Kafka;
+using Consumer_Kafka.Helpers;
 using Consumer_Kafka.Interfaces;
+using Consumer_Kafka.Models;
 using Consumer_Kafka.Services;
 using static Confluent.Kafka.ConfigPropertyNames;
 
@@ -34,7 +36,10 @@ public class EmailService : IConsumerFunction<string, string>
         using (var kafkaService = new KafkaService<string, string>(
             "EmailService",
             "ECOMMERCE_SEND_EMAIL",
-            this))
+            this,
+            Deserializers.Utf8,
+            Deserializers.Utf8
+            ))
         {
             await kafkaService.Run(cancellationToken);
         }

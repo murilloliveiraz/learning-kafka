@@ -10,7 +10,7 @@ public class KafkaService<TKey, TValue> : IDisposable
     private readonly string _groupId;
     private readonly string _topic;
 
-    public KafkaService(string groupId, string topic, IConsumerFunction<TKey, TValue> parseFunction)
+    public KafkaService(string groupId, string topic, IConsumerFunction<TKey, TValue> parseFunction, IDeserializer<TKey> keyDeserializer, IDeserializer<TValue> valueDeserializer)
     {
         _groupId = groupId;
         _topic = topic;
@@ -19,8 +19,8 @@ public class KafkaService<TKey, TValue> : IDisposable
         var config = GetConsumerConfig(groupId);
 
         _consumer = new ConsumerBuilder<TKey, TValue>(config)
-            .SetKeyDeserializer(Deserializers.Utf8 as IDeserializer<TKey>)
-            .SetValueDeserializer(Deserializers.Utf8 as IDeserializer<TValue>)
+            .SetKeyDeserializer(keyDeserializer)
+            .SetValueDeserializer(valueDeserializer)
             .SetErrorHandler((_, e) => Console.WriteLine($"KafkaService ({groupId}): Erro interno do Kafka: {e.Reason}"))
             .SetStatisticsHandler((_, json) => Console.WriteLine($"KafkaService ({groupId}): Estatísticas Kafka: {json}"))
             .Build();

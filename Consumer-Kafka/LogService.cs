@@ -23,7 +23,10 @@ public class LogService : IConsumerFunction<string, string>
         using (var kafkaService = new KafkaService<string, string>(
             "LogService",
             "ECOMMERCE.*",
-            this))
+            this,
+            Deserializers.Utf8,
+            Deserializers.Utf8
+            ))
         {
             await kafkaService.Run(cancellationToken);
         }
