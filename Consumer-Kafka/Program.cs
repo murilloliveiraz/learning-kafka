@@ -2,7 +2,8 @@
 
 Console.WriteLine("Iniciando serviços de consumidor Kafka...");
 
-var fraudDetectorService = new FraudDetectorService();
+var fraudDetectorService1 = new FraudDetectorService();
+var fraudDetectorService2 = new FraudDetectorService();
 var emailService = new EmailService();
 var logService = new LogService();
 
@@ -15,10 +16,11 @@ Console.CancelKeyPress += (_, e) =>
     Console.WriteLine("\nSinal de cancelamento recebido. Aguardando serviços finalizarem...");
 };
 
-var fraudTask = Task.Run(() => fraudDetectorService.ConsumeNewOrders(cts.Token));
-var emailTask = Task.Run(() => emailService.ConsumeNewOrders(cts.Token));
-var logTask = Task.Run(() => logService.ConsumeNewOrders(cts.Token));
+var fraudTask1 = Task.Run(() => fraudDetectorService1.Start(cts.Token));
+var fraudTask2 = Task.Run(() => fraudDetectorService2.Start(cts.Token));
+var emailTask = Task.Run(() => emailService.Start(cts.Token));
+var logTask = Task.Run(() => logService.Start(cts.Token));
 
-await Task.WhenAll(fraudTask, emailTask);
+await Task.WhenAll(fraudTask1, fraudTask2, emailTask);
 
 Console.WriteLine("Todos os serviços de consumidor foram finalizados.");
